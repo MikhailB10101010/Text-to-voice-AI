@@ -17,10 +17,8 @@ if not os.path.exists('model.pkl'):
 with open('model.pkl', 'rb') as f:
     model = pickle.load(f)
 
-# Предсказание
+# Предсказание, точности
 y_pred = model.predict(X_test)
-
-# Оценка точности
 accuracy = accuracy_score(y_test, y_pred)
 
 # Вывод результата в stdout (единственная строка вывода, как требуется)
