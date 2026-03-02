@@ -1,14 +1,23 @@
+from pathlib import Path
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
-import os
+
+#
+base_path = Path(__file__).parent
+train_folder_path = base_path / 'train'
+test_folder_path = base_path / 'test'
+train_file = train_folder_path / 'train_data.csv'
+test_file = test_folder_path / 'test_data.csv'
+train_preproc_file = train_folder_path / 'train_preprocessed.csv'
+test_preproc_file = test_folder_path / 'test_preprocessed.csv'
 
 # Проверяем наличие папок и файлов
-if not os.path.exists("train/train_data.csv") or not os.path.exists("test/test_data.csv"):
+if not (train_file.exists() and test_file.exists()):
     raise FileNotFoundError("Данные не найдены. Запустите data_creation.py")
 
 # Загрузка данных
-train_df = pd.read_csv("train/train_data.csv")
-test_df = pd.read_csv("test/test_data.csv")
+train_df = pd.read_csv(train_file)
+test_df = pd.read_csv(test_file)
 
 # Отделяем признаки от целевой переменной
 X_train = train_df.drop('target', axis=1)
@@ -33,5 +42,5 @@ test_scaled_df = pd.DataFrame(X_test_scaled, columns=X_test.columns)
 test_scaled_df['target'] = y_test.values
 
 # Сохранение предобработанных данных
-train_scaled_df.to_csv("train/train_preprocessed.csv", index=False)
-test_scaled_df.to_csv("test/test_preprocessed.csv", index=False)
+train_scaled_df.to_csv(train_preproc_file, index=False)
+test_scaled_df.to_csv(test_preproc_file, index=False)
