@@ -1,0 +1,69 @@
+pipeline {
+    agent any
+
+    environment {
+        PYTHON_VERSION = "3.12"
+        VIRTUAL_ENV = ".venv"
+    }
+
+    stages {
+        
+        stage('GitHub-Checkout') {
+            steps {
+                // GitHub
+                git branch: 'KhI_edit',
+                    url: 'https://github.com/MikhailB10101010/Text-to-voice-AI.git'
+                echo 'Код успешно получен из репозитория!'
+            }
+        }
+        
+        stage('Initialize') {
+            steps {
+                // python3 -m venv ${VIRTUAL_ENV}
+                sh '''
+                    bash start.sh
+                    . ${VIRTUAL_ENV}/bin/activate
+                    pip -V
+                    pip list
+                '''
+            }
+        }
+        
+        stage('Get Data'){
+            steps {
+                //sh "python3 data_creation.py"
+                sh '''
+                . ${VIRTUAL_ENV}/bin/activate
+                python lab1/data_creation.py
+                '''
+            }   
+        }
+        
+        stage('Data Preproccessing'){
+            steps {
+                sh '''
+                . ${VIRTUAL_ENV}/bin/activate
+                python lab1/data_preprocessing.py
+                '''
+            }
+        }
+        
+        stage('Training Model'){
+            steps {
+                sh '''
+                . ${VIRTUAL_ENV}/bin/activate
+                python lab1/model_preparation.py
+                '''
+            }
+        }
+        
+        stage('Testing Model'){
+            steps {
+                sh '''
+                . ${VIRTUAL_ENV}/bin/activate
+                python lab1/model_testing.py
+                '''
+            }
+        }
+    }
+}
