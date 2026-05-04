@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  ml-service:
+    build: .
+    container_name: mlops-lab3-container
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
