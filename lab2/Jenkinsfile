@@ -2,68 +2,52 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_VERSION = "3.12"
-        VIRTUAL_ENV = ".venv"
+        PYTHON = 'python'
     }
 
     stages {
-        
-        stage('GitHub-Checkout') {
+        stage('Install Dependencies') {
             steps {
-                // GitHub
-                git branch: 'KhI_edit',
-                    url: 'https://github.com/MikhailB10101010/Text-to-voice-AI.git'
-                echo 'Код успешно получен из репозитория!'
+                echo 'Установка зависимостей...'
+                bat "${PYTHON} -m pip install -r requirements.txt"
             }
         }
-        
-        stage('Initialize') {
+
+        stage('Get Data') {
             steps {
-                // python3 -m venv ${VIRTUAL_ENV}
-                sh '''
-                    bash start.sh
-                    . ${VIRTUAL_ENV}/bin/activate
-                    pip -V
-                    pip list
-                '''
+                echo 'Получение данных...'
+                bat "${PYTHON} scripts/fetch_data.py"
             }
         }
-        
-        stage('Get Data'){
+
+        stage('Data Preprocessing') {
             steps {
-                //sh "python3 data_creation.py"
-                sh '''
-                . ${VIRTUAL_ENV}/bin/activate
-                python lab1/data_creation.py
-                '''
-            }   
-        }
-        
-        stage('Data Preproccessing'){
-            steps {
-                sh '''
-                . ${VIRTUAL_ENV}/bin/activate
-                python lab1/data_preprocessing.py
-                '''
+                echo 'Предобработка данных...'
+                bat "${PYTHON} scripts/preprocess.py"
             }
         }
-        
-        stage('Training Model'){
+
+        stage('Train Model') {
             steps {
-                sh '''
-                . ${VIRTUAL_ENV}/bin/activate
-                python lab1/model_preparation.py
-                '''
+                echo 'Обучение модели...'
+                bat "${PYTHON} scripts/train.py"
             }
         }
-        
-        stage('Testing Model'){
+
+        stage('Test Model') {
             steps {
-                sh '''
-                . ${VIRTUAL_ENV}/bin/activate
-                python lab1/model_testing.py
-                '''
+                echo 'Оценка модели...'
+                bat "${PYTHON} scripts/evaluate.py"
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Все этапы Lab 2 выполнены успешно!'
+        }
+        failure {
+            echo 'Произошла ошибка при выполнении конвейера Lab 2.'
         }
     }
 }
