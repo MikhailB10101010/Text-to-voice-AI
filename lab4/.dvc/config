@@ -1,0 +1,4 @@
+['remote "myremote"']
+    url = D:/lab4_dvc_cache
+['core']
+    remote = myremote
